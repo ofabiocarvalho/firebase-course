@@ -1,3 +1,4 @@
+import { CoursesService } from './../services/courses.service';
 import {Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {Course} from "../model/course";
@@ -14,11 +15,15 @@ export class CourseDialogComponent implements OnInit {
     form: FormGroup;
     description:string;
 
+    course: Course;
+
     constructor(
         private fb: FormBuilder,
         private dialogRef: MatDialogRef<CourseDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) course:Course) {
-
+        @Inject(MAT_DIALOG_DATA) course:Course,
+        private coursesService: CoursesService) {
+        
+        this.course = course;
 
         const titles = course.titles;
 
@@ -35,8 +40,14 @@ export class CourseDialogComponent implements OnInit {
 
 
     save() {
+        const changes = this.form.value;
 
-        this.dialogRef.close(this.form.value);
+        this.coursesService.saveCourse(this.course.id, {titles: changes})
+            .subscribe(
+                () => this.dialogRef.close(this.form.value)
+            );
+
+        
 
     }
 
