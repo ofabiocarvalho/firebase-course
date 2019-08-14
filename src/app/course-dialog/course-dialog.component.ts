@@ -22,8 +22,6 @@ export class CourseDialogComponent implements OnInit {
 
     uploadedPercent$: Observable<number>;
 
-    downloadUrl$: Observable<string>;
-
     constructor(
         private fb: FormBuilder,
         private dialogRef: MatDialogRef<CourseDialogComponent>,
@@ -50,20 +48,6 @@ export class CourseDialogComponent implements OnInit {
         const task = this.storage.upload(filePath, file);
         
         this.uploadedPercent$ = task.percentageChanges();
-
-        this.downloadUrl$ = task.snapshotChanges()
-            .pipe(
-                last(), 
-                concatMap(() => this.storage.ref(filePath).getDownloadURL())
-            );
-
-        const saveUrl$ = this.downloadUrl$
-            .pipe(
-                concatMap(url => this.coursesService.saveCourse(this.course.id, {uploadedImageUrl: url}))
-            );
-
-        saveUrl$.subscribe(console.log);
-
     }
 
     ngOnInit() {
